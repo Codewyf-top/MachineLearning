@@ -96,3 +96,6 @@ for i in range(epoch):
         # lines = ax.plot(x_data, prediction_value, 'r-', lw=5)
 
         # plt.pause(0.1)
+prediction_value = sess.run(prediction, feed_dict={xs:x})
+plt.scatter(y, prediction_value)
+plt.show()
