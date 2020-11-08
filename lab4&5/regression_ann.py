@@ -121,6 +121,7 @@ with tf.Session() as sess:
             pred = (neural_network) 
             accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, Y))
             print("Accuracy:", accuracy.eval({X: x, Y: y}))
+            print(sess.run(loss_op, feed_dict={X: x, Y: y}))
 
         # Print Training result
         if (epoch + 1) % 10000 == 0:

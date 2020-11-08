@@ -11,13 +11,33 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score
 import os
 #for MacOS system
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
-
 import tensorboard
-learning_rate = 0.0001
-epoch = 8000
+from sklearn.model_selection import KFold
+from sklearn import linear_model
+#hyper parameters
+learning_rate = 0.01
+EPOCH = 10000
+
+#Network parameters
+n_hidden1 = 10
+n_hidden2 = 10
+# n_hidden3 = 10
+# n_hidden4 = 10
+n_input = 5
+n_output = 1
+
+def get_features_name(index):
+    '''
+    Getting features label text form the airfoil data.
+    '''
+    features_text = ['Frequency', 'Angle of attack', 'Chord length',
+                     'Free-stream velocity', 'Suction side displacement thickness']
+    return features_text[index]
+
 def add_layer(inputs, in_size, out_size, n_layer, activation_function=None):
     #add one more layer and return the output of this layer
     layer_name = 'layer%s' % n_layer
@@ -26,7 +46,7 @@ def add_layer(inputs, in_size, out_size, n_layer, activation_function=None):
             Weights = tf.Variable(tf.random_normal([in_size, out_size]), name='W')
             tf.summary.histogram(layer_name+'weights', Weights)
         with tf.name_scope('biases'):
-            biases = tf.Variable(tf.zeros([1, out_size]) + 0.1, name='b') #因为biases初始值不为0所以初始值随便加上一个0.1
+            biases = tf.Variable(tf.random_normal([out_size]), name='b') #因为biases初始值不为0所以初始值随便加上一个0.1
             tf.summary.histogram(layer_name + 'biases', biases)
         with tf.name_scope('Wx_plus_b'):
             Wx_plus_b = tf.matmul(inputs, Weights) + biases #Wx_plus_b = Weights * x + b iases
@@ -37,65 +57,211 @@ def add_layer(inputs, in_size, out_size, n_layer, activation_function=None):
             outputs = activation_function(Wx_plus_b)
         return outputs
 
-
-# x_data = np.linspace(-1,1,300, dtype=np.float32)[:,np.newaxis] #300行一个特性，np.newaxis是用来增加一个维度 不加维度就不是矩阵了
-# noise = np.random.normal(0, 0.05, x_data.shape).astype(np.float32)
-# y_data = np.square(x_data) - 0.5 + noise
-x_data=np.loadtxt('air_foil_x.txt', encoding='UTF-16')
-y_data=np.loadtxt('air_foil_y.txt', encoding='UTF-16')
-
 def normalization(ndarry):
     return (ndarry - np.mean(ndarry, axis=0)) / np.std(ndarry, axis=0)
 
-x_data = normalization(x_data)
+def standardize(ndarray):
+    '''
+    ### Z-score normalizartion \n
+    return a list of normalized new ndarray also the mean and standard deviation of the original ndarray axis 0 (row). \n
+    rescaling the data =>  x = (x - x.mean) / x.std
+    '''
+    mean = np.mean(ndarray, axis=0)
+    std = np.std(ndarray, axis=0)
+    result = (ndarray - mean) / std
+    return [result, mean, std]
+
+
+def norm(nd):
+    '''
+    ### Min - Max Normalization \n
+    return a list of normalized new ndarray also the maximum and minimum of the original ndarray axis 0 (row). \n
+    rescaling the data => x = (x - min) / (max - min)
+    '''
+    nd_min = np.min(nd, axis=0)
+    nd_max = np.max(nd, axis=0)
+    result = (nd - nd_min) / (nd_max - nd_min)
+    return  [result, nd_max, nd_min]
+
+def multilayer_perceptron(input_d):
+    l1 = add_layer(xs, n_input, n_hidden1, n_layer=1, activation_function=tf.nn.sigmoid)
+    l2 = add_layer(l1, n_hidden1, n_hidden2, n_layer=2, activation_function=tf.nn.sigmoid)
+    # l3 = add_layer(l2, n_hidden2, n_hidden3, n_layer=3, activation_function=tf.nn.relu)
+    # l4 = add_layer(l3, n_hidden3, n_hidden4, n_layer=4, activation_function=tf.nn.relu)
+    #add output layer
+    output_layer = add_layer(l2, n_hidden2, n_output, n_layer=5, activation_function=None) #in_size=10是l1的outsize 1是y_data的size 如果activation function=None, 就为线性函数
+    return output_layer
+
+def get_k_fold_data(data, i, k):
+    '''
+    Saperate date as k-fold and assign the i fold as valid dataset
+    '''
+    fold_size = data.shape[0] // k
+    data_train, data_valid = None, None
+
+    for j in range(k):
+        idx = slice(j * fold_size, (j + 1) * fold_size)
+        data_part = data[idx, :]
+        if j == i:
+            data_valid = data_part
+        elif data_train is None:
+            data_train = data_part
+        else:
+            data_train = np.vstack((data_train, data_part))
+
+    return data_train, data_valid
+
+# k-fold validation
+def k_fold(sess, init, EPOCH, optimizer, data_train, data_valid, neural_network, k):
+    # List for storing accuracy value every 10 epochs
+    ktrain_acc_set = []
+    kvalid_acc_set = []
+
+    # for calculating the mean accuracy
+    mean_train_acc, mean_valid_acc = 0, 0
+    for i in range(k):
+        data_train, data_valid = get_k_fold_data(data, i, k)
+        train_acc, valid_acc, train_acc_set, valid_acc_set = train(sess, init, EPOCH, optimizer, data_train,
+                                                                   data_valid, neural_network, k_fold_flag=True)
+        print("Fold", i, "train acc:", train_acc, "valid acc:", valid_acc)
+        mean_train_acc += train_acc
+        mean_valid_acc += train_acc
+        ktrain_acc_set.append(train_acc_set)
+        kvalid_acc_set.append(valid_acc_set)
+
+    mean_train_acc /= k
+    mean_valid_acc /= k
+
+    return mean_train_acc, mean_valid_acc, ktrain_acc_set, kvalid_acc_set
+
+
+def train(sess, init, number_epochs, optimizer, x,
+          y, neural_network, k_fold_flag=False):
+    sess.run(init)
+
+    # List for storing accuracy value every 10 epochs
+    train_acc_set = []
+    valid_acc_set = []
+
+    x_valid, y_valid, labels_valid = data_seperate(y)
+    x_train, y_train, labels_train = data_seperate(x)
+
+    # Training epoch
+    for epoch in range(EPOCH):
+        for batch_x, batch_y, batch_labels in data_iter(batch_size, data_train):
+            sess.run(optimizer, feed_dict={X: batch_x, Y: batch_y})
+
+        if epoch % 10 == 0 or epoch % (EPOCH // 5) == 0:
+            accuracy_train = get_accuracy(neural_network, labels_train).eval({X: x_train})
+            accuracy_valid = get_accuracy(neural_network, labels_valid).eval({X: x_valid})
+            train_acc_set.append(accuracy_train)
+            valid_acc_set.append(accuracy_valid)
+            # If the function is not in a k-fold validation, then print accuracy
+            if epoch % (EPOCH // 5) == 0 and k_fold_flag == False:
+                print("Epoch:", '%d' % (epoch + 1), "train acc:", accuracy_train,
+                      "valid acc:", accuracy_valid)
+
+    # Final accuracy
+    accuracy_train = get_accuracy(neural_network, labels_train)
+    accuracy_valid = get_accuracy(neural_network, labels_valid)
+    final_train_acc = accuracy_train.eval({xs: x_train})
+    final_valid_acc = accuracy_valid.eval({ys: x_valid})
+
+    return final_train_acc, final_valid_acc, train_acc_set, valid_acc_set
+#define placeholder for inputs to network
+with tf.name_scope('inputs'):
+    xs = tf.placeholder(tf.float32, [None, n_input], name='x_input')#None表示无论你给多少例子都ok，1代表一个属性; 行数不限制，列只能有一列
+    ys = tf.placeholder(tf.float32, [None, n_output], name='y_input')
+
+#create model
+neural_network = multilayer_perceptron(xs)
+#the error between prediction and real data
+with tf.name_scope('loss'):
+    loss = tf.reduce_mean(tf.math.squared_difference(neural_network, ys),name='loss') #reduce_sum是对每一个例子进行求和 reduce_mean对所有和求一个平均值
+    tf.summary.scalar('loss', loss)
+with tf.name_scope('optimizer'):
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss) #learning rate 这里的train_step相当于optimizer
+
+# load data file
+data=np.loadtxt('airfoil.txt', encoding='UTF-16')
+x_data = data[:, 0:5]
+y_data = data[:, 5]
+
+# standardize the data
+x_data, data_mean, data_std = standardize(x_data)
+
 # setting training dataset
 x = x_data[0:1000, :]
 # reshape y to fit the placeholder
 y = y_data[0:1000, np.newaxis]
-#define placeholder for inputs to network
-with tf.name_scope('inputs'):
-    xs = tf.placeholder(tf.float32, [None, 5], name='x_input')#None表示无论你给多少例子都ok，1代表一个属性; 行数不限制，列只能有一列
-    ys = tf.placeholder(tf.float32, [None, 1], name='y_input')
-#add hiddenlayer
-l1 = add_layer(xs, 5, 10, n_layer=1, activation_function=tf.nn.relu)
-l2 = add_layer(l1, 10, 10, n_layer=2, activation_function=tf.nn.relu)
-l3 = add_layer(l2, 10, 10, n_layer=3, activation_function=tf.nn.relu)
-l4 = add_layer(l3, 10, 10, n_layer=4, activation_function=tf.nn.relu)
-#add output layer
-prediction = add_layer(l4, 10, 1, n_layer=5, activation_function=None) #in_size=10是l1的outsize 1是y_data的size 如果activation function=None, 就为线性函数
-#the error between prediction and real data
-with tf.name_scope('loss'):
-    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction), reduction_indices=[1]),name='loss') #reduce_sum是对每一个例子进行求和 reduce_mean对所有和求一个平均值
-    tf.summary.scalar('loss', loss)
-with tf.name_scope('train'):
-    train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss) #learning rate 这里的train_step相当于optimizer
-#maybe try other optimizer like adam
+
+# setting test dataset
+x_test = x_data[1001:, :]
+# reshape y to fit the placeholder
+y_test = y_data[1001:, np.newaxis]
+
+
 #important step
 init = tf.global_variables_initializer()#初始所有变量
-sess = tf.Session()
-merged = tf.summary.merge_all()
-writer = tf.summary.FileWriter("logs/", sess.graph)
-sess.run(init)
 
-# fig = plt.figure()
-# ax = fig.add_subplot(1,1,1)
-# ax.scatter(x_data, y_data)
-# plt.ion()
-# plt.show()
-for i in range(epoch):
-    sess.run(train_step, feed_dict={xs:x, ys:y})
-    if i % 50 == 0:
-        result = sess.run(merged, feed_dict={xs:x, ys:y})
-        writer.add_summary(result, i)#i->步数
-        print(sess.run(loss, feed_dict={xs:x, ys:y}))
-        # try:
-        #     ax.lines.remove(lines[0])
-        # except Exception:
-        #     pass
-        # prediction_value = sess.run(prediction, feed_dict={xs:x})
-        # lines = ax.plot(x_data, prediction_value, 'r-', lw=5)
+with tf.Session() as sess:
+    sess.run(init)
+    merged = tf.summary.merge_all()
+    writer = tf.summary.FileWriter("logs/", sess.graph)
+    #training eopch
+    for epoch in range(EPOCH):
+        sess.run(optimizer, feed_dict={xs:x, ys:y})
+        if (epoch + 1) % 2000 == 0:
+            print("Epoch:", '%d' % (epoch + 1))
+            pred = (neural_network)
+            accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
+            print("Train loss:", accuracy.eval({xs:x, ys:y}))
+            print(sess.run(loss, feed_dict={xs:x, ys:y}))
+            result = sess.run(merged, feed_dict={xs:x, ys:y})
+            writer.add_summary(result, epoch)#i->步数
 
-        # plt.pause(0.1)
-prediction_value = sess.run(prediction, feed_dict={xs:x})
-plt.scatter(y, prediction_value)
-plt.show()
+
+        if (epoch + 1) % 10000 == 0:
+            output = pred.eval({xs:x})
+            for i in range(x.shape[1]):
+                plt.subplot(230 + i + 1)
+                plt.plot(x[:, i:i + 1], y, 'ro', markersize=6, label='Original value')
+                plt.plot(x[:, i:i + 1], output, 'bo', markersize=4, label='Predicted value')
+                plt.legend()
+                plt.title(get_features_name(i))
+            plt.show()
+
+            rng = [np.min(y), np.max(y)]
+            plt.plot(rng, rng)
+            plt.scatter(y, output)
+            plt.show()
+
+
+
+    # Test result
+    pred = (neural_network)  # Apply softmax to logits
+    accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
+    print("Test loss:", accuracy.eval({xs: x_test, ys: y_test}))
+    output = pred.eval({xs: x_test})
+    for i in range(x_test.shape[1]):
+        plt.subplot(230 + i + 1)
+        plt.plot(x_test[:, i:i + 1], y_test, 'ro', markersize=6, label='Original value')
+        plt.plot(x_test[:, i:i + 1], output, 'bo', markersize=4, label='Predicted value')
+        plt.legend()
+        plt.title(get_features_name(i))
+    plt.show()
+
+    # Inspect how good the predictions match the labels
+    rng = [np.min(y), np.max(y)]
+    plt.plot(rng, rng)
+    plt.scatter(y_test, output)
+    plt.show()
+
+    print("#  10-fold validation")
+    k = 10
+    train_acc, valid_acc, train_acc_sets, valid_acc_sets = k_fold(sess ,init, EPOCH, optimizer,
+                                                                x, y, neural_network, k)
+
+    print("10-fold average", "train acc:" , train_acc, "valid acc:", valid_acc)
+    print("*" * 50) # seperate the output on terminal
+
