@@ -123,7 +123,7 @@ x_data, data_mean, data_std = standardize(x_data)
 # setting training dataset
 x = x_data[0:1000, :]
 # reshape y to fit the placeholder
-y = y_data[0:1000, np.newaxis]
+y = y_data[:, np.newaxis]
 
 # setting test dataset
 x_test = x_data[1001:, :]
@@ -133,102 +133,81 @@ y_test = y_data[1001:, np.newaxis]
 
 
 #important step
-init = tf.global_variables_initializer()#初始所有变量
+def run(x,y,x_test,y_test):
+    init = tf.global_variables_initializer()#初始所有变量
 
-with tf.Session() as sess:
-    sess.run(init)
-    merged = tf.summary.merge_all()
-    writer = tf.summary.FileWriter("logs/", sess.graph)
+    with tf.Session() as sess:
+        sess.run(init)
+        merged = tf.summary.merge_all()
+        writer = tf.summary.FileWriter("logs/", sess.graph)
 
-    #training eopch
-    for epoch in range(EPOCH):
-        sess.run(optimizer, feed_dict={xs:x, ys:y})
-        if (epoch + 1) % 2000 == 0:
-            print("Epoch:", '%d' % (epoch + 1))
-            pred = (neural_network)
-            accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
-            print("Train loss:", accuracy.eval({xs:x, ys:y}))
-            print(sess.run(loss, feed_dict={xs:x, ys:y}))
-            result = sess.run(merged, feed_dict={xs:x, ys:y})
-            writer.add_summary(result, epoch)#i->步数
-
-
-        if (epoch + 1) % 10000 == 0:
-            output = pred.eval({xs:x})
-            for i in range(x.shape[1]):
-                plt.subplot(230 + i + 1)
-                plt.plot(x[:, i:i + 1], y, 'ro', markersize=6, label='Original value')
-                plt.plot(x[:, i:i + 1], output, 'bo', markersize=4, label='Predicted value')
-                plt.legend()
-                plt.title(get_features_name(i))
-            plt.show()
-
-            rng = [np.min(y), np.max(y)]
-            plt.plot(rng, rng)
-            plt.scatter(y, output)
-            plt.show()
+        #training eopch
+        for epoch in range(EPOCH):
+            sess.run(optimizer, feed_dict={xs:x, ys:y})
+            if (epoch + 1) % 2000 == 0:
+                print("Epoch:", '%d' % (epoch + 1))
+                pred = (neural_network)
+                accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
+                print("Train loss:", accuracy.eval({xs:x, ys:y}))
+                print(sess.run(loss, feed_dict={xs:x, ys:y}))
+                result = sess.run(merged, feed_dict={xs:x, ys:y})
+                writer.add_summary(result, epoch)#i->步数
 
 
-
-    # Test result
-    pred = (neural_network)  # Apply softmax to logits
-    accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
-    print("Test loss:", accuracy.eval({xs: x_test, ys: y_test}))
-    output = pred.eval({xs: x_test})
-    for i in range(x_test.shape[1]):
-        plt.subplot(230 + i + 1)
-        plt.plot(x_test[:, i:i + 1], y_test, 'ro', markersize=6, label='Original value')
-        plt.plot(x_test[:, i:i + 1], output, 'bo', markersize=4, label='Predicted value')
-        plt.legend()
-        plt.title(get_features_name(i))
-    plt.show()
-
-    # Inspect how good the predictions match the labels
-    rng = [np.min(y), np.max(y)]
-    plt.plot(rng, rng)
-    plt.scatter(y_test, output)
-    plt.show()
-
-#K-fold cross-validation
-#split the train set into 10 folds
-# kf = KFold(n_splits=10, shuffle=False)
-# index = kf.split(x, y)
+            # if (epoch + 1) % 10000 == 0:
+            #     output = pred.eval({xs:x})
+            #     for i in range(x.shape[1]):
+            #         plt.subplot(230 + i + 1)
+            #         plt.plot(x[:, i:i + 1], y, 'ro', markersize=6, label='Original value')
+            #         plt.plot(x[:, i:i + 1], output, 'bo', markersize=4, label='Predicted value')
+            #         plt.legend()
+            #         plt.title(get_features_name(i))
+            #     plt.show()
+            #
+            #     rng = [np.min(y), np.max(y)]
+            #     plt.plot(rng, rng)
+            #     plt.scatter(y, output)
+            #     plt.show()
 
 
-# train_acc_set = []
-# valid_acc_set = []
-# for train_index, test_index in kf.split(x_data):
-#     print("TRAIN:", train_index, "Valid:", test_index)
-#     X_train, X_valid = x_data[train_index], x_data[test_index]
-#     Y_train, Y_valid = y_data[train_index], y_data[test_index]
-#     for i in range (10):
-#         for epoch in range(EPOCH):
-#             # sess.run(optimizer, feed_dict={xs: X_train, ys: Y_train})
-#             # sess.close()
-#             if (epoch + 1) % 2000 == 0:
-#                 print("Epoch:", '%d' % (epoch + 1))
-#                 pred = (neural_network)
-#                 accuracy_train = get_accuracy(neural_network, Y_train).eval({xs: X_train})
-#                 accuracy_valid = get_accuracy(neural_network, Y_valid).eval({xs: X_valid})
-#                 train_acc_set.append(accuracy_train)
-#                 valid_acc_set.append(accuracy_valid)
-#
-#                 print("Train loss:", accuracy_train.eval({xs: X_train, ys: Y_train}))
-#
-#                 if epoch % (EPOCH // 5) == 0 and k_fold_flag == False:
-#                     print("Epoch:", '%d' % (epoch + 1), "train acc:" , accuracy_train,
-#                           "valid acc:", accuracy_valid)
-#
-#     accuracy_train = get_accuracy(neural_network, Y_train)
-#     accuracy_valid = get_accuracy(neural_network, Y_valid)
-#     final_train_acc = accuracy_train.eval({X: X_train})
-#     final_valid_acc = accuracy_valid.eval({X: X_valid})
-#     train_acc = final_train_acc
-#     valid_acc = final_valid_acc
-#     mean_train_acc, mean_valid_acc = 0, 0
-#     mean_train_acc += train_acc
-#     mean_valid_acc += train_acc
-#     ktrain_acc_set.append(train_acc_set)
-#     kvalid_acc_set.append(valid_acc_set)
-#     print("10-fold average", "train acc:", train_acc, "valid acc:", valid_acc)
-#     print("*" * 50)  # seperate the output on terminal
+
+        # Test result
+        pred = (neural_network)  # Apply softmax to logits
+        accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
+        print("Test loss:", accuracy.eval({xs: x_test, ys: y_test}))
+        output = pred.eval({xs: x_test})
+
+        # for i in range(x_test.shape[1]):
+        #     plt.subplot(230 + i + 1)
+        #     plt.plot(x_test[:, i:i + 1], y_test, 'ro', markersize=6, label='Original value')
+        #     plt.plot(x_test[:, i:i + 1], output, 'bo', markersize=4, label='Predicted value')
+        #     plt.legend()
+        #     plt.title(get_features_name(i))
+        # plt.show()
+
+        # Inspect how good the predictions match the labels
+        # rng = [np.min(y), np.max(y)]
+        # plt.plot(rng, rng)
+        # plt.scatter(y_test, output)
+        # plt.show()
+def main():
+    new_x_train=[]
+    new_y_train=[]
+    new_x_test =[]
+    new_y_test =[]
+
+    kf = KFold(5, False)
+    for train_index, test_index in kf.split(x_data):
+        index_train=list(train_index)
+        index_test =list(test_index)
+        for i in range(len(index_train)):
+            new_x_train.append(x_data[index_train[i]])
+            new_y_train.append(y[index_train[i]])
+        for j in range(len((index_test))):
+            new_x_test.append(x_data[index_test[j]])
+            new_y_test.append(y[index_test[j]])
+
+        run(new_x_train,new_y_train,new_x_test,new_y_test)
+main()
+
+

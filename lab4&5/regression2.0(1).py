@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-@Time ： 2020/11/5 7:52 下午
+@Time ： 2020/11/8 10:32 下午
 @Auth ： Codewyf
-@File ：build_a_neural_network.py
+@File ：regression2.0.py
 @IDE ：PyCharm
 @Motto：Go Ahead Instead of Heasitating
 
 """
+
 
 import tensorflow as tf
 import numpy as np
@@ -189,46 +190,35 @@ with tf.Session() as sess:
     plt.scatter(y_test, output)
     plt.show()
 
-#K-fold cross-validation
-#split the train set into 10 folds
-# kf = KFold(n_splits=10, shuffle=False)
-# index = kf.split(x, y)
+
+def run(x,y):
+    for i in range(epoch):
+        sess = tf.Session()
+        sess.run(init)
+        sess.run(optimizer, feed_dict={xs:x, ys:y})
+        if i % 50 == 0:
+            result = sess.run(merged, feed_dict={xs:x, ys:y})
+            writer.add_summary(result, i)#i->步数
+            print(sess.run(loss, feed_dict={xs:x, ys:y}))
+        sess.close()
+
+def main():
+    new_x_train=[]
+    new_y_train=[]
+    new_x_test =[]
+    new_y_test =[]
+
+    kf = KFold(5, False)
+    for train_index, test_index in kf.split(x):
+        index_train=list(train_index)
+        index_test =list(test_index)
+        for i in range(len(index_train)):
+            new_x_train.append(x[index_train[i]])
+            new_y_train.append(y[index_train[i]])
+        for j in range(len((index_test))):
+            new_x_test.append(x[index_test[j]])
+            new_y_test.append(y[index_test[j]])
+        run(new_x_train,new_y_train)
 
 
-# train_acc_set = []
-# valid_acc_set = []
-# for train_index, test_index in kf.split(x_data):
-#     print("TRAIN:", train_index, "Valid:", test_index)
-#     X_train, X_valid = x_data[train_index], x_data[test_index]
-#     Y_train, Y_valid = y_data[train_index], y_data[test_index]
-#     for i in range (10):
-#         for epoch in range(EPOCH):
-#             # sess.run(optimizer, feed_dict={xs: X_train, ys: Y_train})
-#             # sess.close()
-#             if (epoch + 1) % 2000 == 0:
-#                 print("Epoch:", '%d' % (epoch + 1))
-#                 pred = (neural_network)
-#                 accuracy_train = get_accuracy(neural_network, Y_train).eval({xs: X_train})
-#                 accuracy_valid = get_accuracy(neural_network, Y_valid).eval({xs: X_valid})
-#                 train_acc_set.append(accuracy_train)
-#                 valid_acc_set.append(accuracy_valid)
-#
-#                 print("Train loss:", accuracy_train.eval({xs: X_train, ys: Y_train}))
-#
-#                 if epoch % (EPOCH // 5) == 0 and k_fold_flag == False:
-#                     print("Epoch:", '%d' % (epoch + 1), "train acc:" , accuracy_train,
-#                           "valid acc:", accuracy_valid)
-#
-#     accuracy_train = get_accuracy(neural_network, Y_train)
-#     accuracy_valid = get_accuracy(neural_network, Y_valid)
-#     final_train_acc = accuracy_train.eval({X: X_train})
-#     final_valid_acc = accuracy_valid.eval({X: X_valid})
-#     train_acc = final_train_acc
-#     valid_acc = final_valid_acc
-#     mean_train_acc, mean_valid_acc = 0, 0
-#     mean_train_acc += train_acc
-#     mean_valid_acc += train_acc
-#     ktrain_acc_set.append(train_acc_set)
-#     kvalid_acc_set.append(valid_acc_set)
-#     print("10-fold average", "train acc:", train_acc, "valid acc:", valid_acc)
-#     print("*" * 50)  # seperate the output on terminal
+main()
