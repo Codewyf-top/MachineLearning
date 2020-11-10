@@ -180,7 +180,7 @@ def run(x,y,x_t,y_t,k):
                     RMESE = tf.sqrt(loss)
                     print("Average Root Mean Square Error:",RMESE.eval({xs:x, ys:y}))
                 else:
-                    save_path = saver.save(sess, "checkpoint/EPOCH.ckpt")
+                    save_path = saver.save(sess, "checkpoint/model.ckpt")
                 output = pred.eval({xs:x})
                 for i in range(x.shape[1]):
                     plt.subplot(230 + i + 1)
