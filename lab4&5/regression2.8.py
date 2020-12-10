@@ -23,7 +23,7 @@ warnings.filterwarnings('ignore')
 #hyper parameters
 learning_rate = 0.01
 EPOCH = 10000
-dp=0.4
+dp=0.5
 #Network parameters
 n_hidden1 = 10
 n_hidden2 = 10
@@ -214,6 +214,8 @@ def run(x,y,x_t,y_t,k):
         #Inspect how good the predictions match the labels
         rng = [np.min(y), np.max(y)]
         plt.plot(rng, rng)
+        plt.xlabel('True value')
+        plt.ylabel('Predicted value')
         plt.scatter(y_t, output)
         plt.show()
 

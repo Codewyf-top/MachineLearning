@@ -2,7 +2,9 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import csv
-
+import os
+#for MacOS system
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 def get_weight_type(index):
     Nobeyesdad = ["Insufficient_Weight" ,"Normal_Weight" , "Overweight_Level_I",

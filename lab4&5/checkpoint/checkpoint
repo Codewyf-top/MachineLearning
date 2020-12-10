@@ -1,2 +1,2 @@
-model_checkpoint_path: "EPOCH.ckpt"
-all_model_checkpoint_paths: "EPOCH.ckpt"
+model_checkpoint_path: "model.ckpt"
+all_model_checkpoint_paths: "model.ckpt"
