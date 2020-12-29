@@ -1,0 +1,43 @@
+Fold 1 train acc: 1.0 valid acc: 0.98578197
+Fold 2 train acc: 1.0 valid acc: 1.0
+Fold 3 train acc: 1.0 valid acc: 1.0
+Fold 4 train acc: 1.0 valid acc: 0.99526066
+Fold 5 train acc: 1.0 valid acc: 0.9905213
+Fold 6 train acc: 1.0 valid acc: 1.0
+Fold 7 train acc: 1.0 valid acc: 0.99526066
+Fold 8 train acc: 1.0 valid acc: 0.99526066
+Fold 9 train acc: 1.0 valid acc: 0.9905213
+Fold 10 train acc: 1.0 valid acc: 1.0
+10-fold average train acc: 1.0 valid acc: 0.9952606558799744
+
+fold:1
+Training RMSE: 2.1771202
+Test loss: 7.0891395
+fold:2
+Training RMSE: 1.954923
+Test loss: 1.8705418
+fold:3
+Training RMSE: 1.9187683
+Test loss: 1.757774
+fold:4
+Training RMSE: 2.3325348
+Test loss: 3.0385425
+fold:5
+Training RMSE: 2.2122865
+Test loss: 3.4273117
+fold:6
+Training RMSE: 1.8459189
+Test loss: 2.6826723
+fold:7
+Training RMSE: 2.312053
+Test loss: 4.8568807
+fold:8
+Training RMSE: 1.9353163
+Test loss: 3.520011
+fold:9
+Training RMSE: 2.774583
+Test loss: 7.7901106
+fold:10
+Training RMSE: 1.7440001
+Test loss: 3.041536
+cross_val_loss:5.816479682922363

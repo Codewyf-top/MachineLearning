@@ -1,0 +1,208 @@
+
+One time optimazition for Gaussian RBF kernel SVM
+
+trScoreTable =
+
+  2×4 table
+
+    Label Names     Precision    Recall    F1-Score
+    ____________    _________    ______    ________
+
+    "No_Obesity"        1          1          1    
+    "Obesity"           1          1          1    
+
+
+vaScoreTable =
+
+  2×4 table
+
+    Label Names     Precision    Recall     F1-Score
+    ____________    _________    _______    ________
+
+    "No_Obesity"     0.99383      0.9969    0.99536 
+    "Obesity"        0.99652     0.99306    0.99478 
+
+Training accuracy:1
+Testing accuracy:0.99509
+Number of Support Vectors:132
+Percentage of Support Vectors:0.088
+
+One time optimazition for Polynomial kernel SVM
+
+trScoreTable =
+
+  2×4 table
+
+    Label Names     Precision    Recall     F1-Score
+    ____________    _________    _______    ________
+
+    "No_Obesity"     0.99878           1    0.99939 
+    "Obesity"              1     0.99854    0.99927 
+
+
+vaScoreTable =
+
+  2×4 table
+
+    Label Names     Precision    Recall     F1-Score
+    ____________    _________    _______    ________
+
+    "No_Obesity"     0.99385           1    0.99691 
+    "Obesity"              1     0.99306    0.99652 
+
+Training accuracy:0.99933
+Testing accuracy:0.99673
+Number of Support Vectors:40
+Percentage of Support Vectors:0.026667
+
+One time optimazition for Gaussian RBF kernel SVR
+Training RMSE:1.5132
+Testing RMSE:2.6994
+Number of Support Vectors:1000
+Percentage of Support Vectors:1
+
+One time optimazition for Polynomial kernel SVR
+Training RMSE:4.8308
+Testing RMSE:3.6148
+Number of Support Vectors:999
+Percentage of Support Vectors:0.999
+
+Nested Cross Validation for linear kernel SVM
+Fold-1 Training accuracy:0.99789
+Fold-1 Validating accuracy:0.99526
+Fold-2 Training accuracy:1
+Fold-2 Validating accuracy:0.99526
+Fold-3 Training accuracy:0.99842
+Fold-3 Validating accuracy:0.99526
+Fold-4 Training accuracy:0.99842
+Fold-4 Validating accuracy:0.99526
+Fold-5 Training accuracy:0.99789
+Fold-5 Validating accuracy:0.99526
+Fold-6 Training accuracy:0.99842
+Fold-6 Validating accuracy:0.98104
+Fold-7 Training accuracy:0.99842
+Fold-7 Validating accuracy:0.99052
+Fold-8 Training accuracy:0.99789
+Fold-8 Validating accuracy:1
+Fold-9 Training accuracy:0.99789
+Fold-9 Validating accuracy:0.99526
+Fold-10 Training accuracy:0.99842
+Fold-10 Validating accuracy:0.99526
+10 Fold average training accuracy:0.99837
+10 Fold average validating accuracy:0.99384
+Nested Cross Validation for Gaussian RBF kernel SVM
+Fold-1 Training accuracy:1
+Fold-1 Validating accuracy:1
+Fold-2 Training accuracy:1
+Fold-2 Validating accuracy:0.99526
+Fold-3 Training accuracy:1
+Fold-3 Validating accuracy:0.99526
+Fold-4 Training accuracy:1
+Fold-4 Validating accuracy:1
+Fold-5 Training accuracy:1
+Fold-5 Validating accuracy:0.99526
+Fold-6 Training accuracy:0.99947
+Fold-6 Validating accuracy:0.98578
+Fold-7 Training accuracy:1
+Fold-7 Validating accuracy:0.99526
+Fold-8 Training accuracy:1
+Fold-8 Validating accuracy:1
+Fold-9 Training accuracy:1
+Fold-9 Validating accuracy:0.99052
+Fold-10 Training accuracy:1
+Fold-10 Validating accuracy:0.99526
+10 Fold average training accuracy:0.99995
+10 Fold average validating accuracy:0.99526
+Nested Cross Validation for Polynomial kernel SVM
+Fold-1 Training accuracy:0.99842
+Fold-1 Validating accuracy:0.99526
+Fold-2 Training accuracy:1
+Fold-2 Validating accuracy:0.99526
+Fold-3 Training accuracy:0.99895
+Fold-3 Validating accuracy:0.99526
+Fold-4 Training accuracy:0.99842
+Fold-4 Validating accuracy:0.99526
+Fold-5 Training accuracy:0.99895
+Fold-5 Validating accuracy:0.99526
+Fold-6 Training accuracy:1
+Fold-6 Validating accuracy:0.98578
+Fold-7 Training accuracy:0.99895
+Fold-7 Validating accuracy:0.99052
+Fold-8 Training accuracy:0.99947
+Fold-8 Validating accuracy:1
+Fold-9 Training accuracy:1
+Fold-9 Validating accuracy:0.98104
+Fold-10 Training accuracy:0.99842
+Fold-10 Validating accuracy:0.99526
+10 Fold average training accuracy:0.99916
+10 Fold average validating accuracy:0.99289
+
+Nested Cross Validation for linear kernel SVR
+Fold-1 Training accuracy:4.8689
+Fold-1 Validating accuracy:4.9664
+Fold-2 Training accuracy:4.8939
+Fold-2 Validating accuracy:4.8865
+Fold-3 Training accuracy:4.8505
+Fold-3 Validating accuracy:5.2536
+Fold-4 Training accuracy:4.9569
+Fold-4 Validating accuracy:3.9677
+Fold-5 Training accuracy:4.8672
+Fold-5 Validating accuracy:4.959
+Fold-6 Training accuracy:4.8648
+Fold-6 Validating accuracy:4.7776
+Fold-7 Training accuracy:4.8223
+Fold-7 Validating accuracy:5.3138
+Fold-8 Training accuracy:4.8639
+Fold-8 Validating accuracy:4.9092
+Fold-9 Training accuracy:4.8833
+Fold-9 Validating accuracy:4.9437
+Fold-10 Training accuracy:4.8809
+Fold-10 Validating accuracy:4.8538
+10 Fold average training RMSE:4.8753
+10 Fold average validating RMSE:4.8831
+Nested Cross Validation for Gaussian RBF kernel SVR
+Fold-1 Training accuracy:2.9849
+Fold-1 Validating accuracy:2.842
+Fold-2 Training accuracy:3.9082
+Fold-2 Validating accuracy:4.0759
+Fold-3 Training accuracy:4.4731
+Fold-3 Validating accuracy:4.8601
+Fold-4 Training accuracy:4.1912
+Fold-4 Validating accuracy:3.3412
+Fold-5 Training accuracy:3.6083
+Fold-5 Validating accuracy:3.7048
+Fold-6 Training accuracy:4.6194
+Fold-6 Validating accuracy:4.6006
+Fold-7 Training accuracy:1.959
+Fold-7 Validating accuracy:2.9508
+Fold-8 Training accuracy:3.7049
+Fold-8 Validating accuracy:3.8349
+Fold-9 Training accuracy:4.4065
+Fold-9 Validating accuracy:4.3221
+Fold-10 Training accuracy:4.6219
+Fold-10 Validating accuracy:4.489
+10 Fold average training RMSE:3.8478
+10 Fold average validating RMSE:3.9022
+Nested Cross Validation for Polynomial kernel SVR
+Fold-1 Training accuracy:4.2459
+Fold-1 Validating accuracy:4.2796
+Fold-2 Training accuracy:4.6851
+Fold-2 Validating accuracy:3.893
+Fold-3 Training accuracy:2.928
+Fold-3 Validating accuracy:3.0814
+Fold-4 Training accuracy:3.5367
+Fold-4 Validating accuracy:3.1251
+Fold-5 Training accuracy:4.2098
+Fold-5 Validating accuracy:4.3978
+Fold-6 Training accuracy:4.0726
+Fold-6 Validating accuracy:4.1812
+Fold-7 Training accuracy:3.5718
+Fold-7 Validating accuracy:3.8979
+Fold-8 Training accuracy:4.4426
+Fold-8 Validating accuracy:4.7270
+Fold-9 Training accuracy:4.2415
+Fold-9 Validating accuracy:4.2715
+Fold-10 Training accuracy:2.9277
+Fold-10 Validating accuracy:3.1137
+10 Fold average training RMSE:4.8753
+10 Fold average validating RMSE:4.8831

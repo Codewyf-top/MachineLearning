@@ -1,0 +1,70 @@
+10-fold validation for classification 
+Fold-1
+Training Accuarcy:1
+Validating Accuarcy:0.99526
+
+Fold-2
+Training Accuarcy:1 
+Validating Accuarcy:0.99526
+
+Fold-3
+Training Accuarcy:1
+Validating Accuarcy:0.99526
+
+Fold-4
+Training Accuarcy:1
+Validating Accuarcy:0.99526
+
+Fold-5
+Training Accuarcy:1
+Validating Accuarcy:0.98578
+
+Fold-6
+Training Accuarcy:1
+Validating Accuarcy:0.99526
+
+Fold-7
+Training Accuarcy:1
+Validating Accuarcy:0.99052
+
+Fold-8
+Training Accuarcy:1
+Validating Accuarcy:0.99052
+
+Fold-9
+Training Accuarcy:1
+Validating Accuarcy:0.97156
+
+Fold-10
+Training Accuarcy:1
+Validating Accuarcy:0.98104
+
+10-Fold Average
+Average training Accuarcy:1
+Average validating Accuarcy:0.98957
+
+10-fold validation for regression 
+Fold-1
+ RMSE of training set: 1.794 RMSE of validating set: 3.0532
+Fold-2
+ RMSE of training set: 1.9255 RMSE of validating set: 3.3408
+Fold-3
+ RMSE of training set: 1.8206 RMSE of validating set: 2.843
+Fold-4
+ RMSE of training set: 1.8167 RMSE of validating set: 3.3064
+Fold-5
+ RMSE of training set: 1.8835 RMSE of validating set: 3.1053
+Fold-6
+ RMSE of training set: 1.9046 RMSE of validating set: 2.6267
+Fold-7
+ RMSE of training set: 1.76 RMSE of validating set: 2.5074
+Fold-8
+ RMSE of training set: 1.9616 RMSE of validating set: 2.938
+Fold-9
+ RMSE of training set: 1.7365 RMSE of validating set: 3.0618
+Fold-10
+ RMSE of training set: 1.8536 RMSE of validating set: 2.8826
+
+10-Fold Average10
+Avg training RMSE: 1.8457
+Avg validating RMSE: 2.9665

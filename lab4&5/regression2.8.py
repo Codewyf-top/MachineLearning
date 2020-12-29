@@ -170,7 +170,8 @@ def run(x,y,x_t,y_t,k):
                 pred = (neural_network)
                 accuracy = tf.reduce_mean(tf.keras.losses.MSE(pred, ys))
                 print("Train loss:", accuracy.eval({xs:x, ys:y}))
-
+                RMESE = tf.sqrt(loss)
+                print("Training RMSE:", RMESE.eval({xs: x, ys: y}))
 
                 result = sess.run(merged, feed_dict={xs:x, ys:y})
                 writer.add_summary(result, epoch)#i->步数
